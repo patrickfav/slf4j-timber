@@ -11,10 +11,8 @@ android:
     - tools # to get the new `repository-11.xml`
     - platform-tools
     - tools # to install Android SDK tools 25.1.x (x = 6 right now)
-    - build-tools-26.0.2
-    - android-26
-#    - android-22
-#    - sys-img-armeabi-v7a-android-22
+    - build-tools-27.0.2
+    - android-27
     - extra-google-m2repository
     - extra-android-m2repository
 
@@ -23,27 +21,14 @@ android:
       - 'android-sdk-license-.+'
       - 'google-gdk-license-.+'
 
-env:
-  global:
-   # install timeout in minutes (2 minutes by default)
-    - ADB_INSTALL_TIMEOUT=8
-
 before_install:
-  - openssl aes-256-cbc -K $encrypted_376031a79878_key -iv $encrypted_376031a79878_iv -in credentials.tar.enc -out credentials.tar -d
+  - openssl aes-256-cbc -K $encrypted_ff109aeab779_key -iv $encrypted_ff109aeab779_iv -in credentials.tar.enc -out credentials.tar -d
   - tar xvf credentials.tar
-
-# Emulator Management: Create, Start and Wait
-#before_script:
-#  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-#  - emulator -avd test -no-audio -no-window &
-#  - android-wait-for-emulator
-#  - adb shell input keyevent 82 &
 
 script:
   - ./gradlew clean assemble --stacktrace
   - ./gradlew checkstyle lint --stacktrace
   - ./gradlew testReleaseUnitTest --info
-# - ./gradlew connectedDebugAndroidTest
 
 after_success:
   - ./gradlew jacocoTestReleaseUnitTestReport coveralls --info
@@ -57,14 +42,10 @@ deploy:
       tags: true
   - provider: releases
     api_key:
-      secure: "pnYV4mnpvtOHWx8arKgY0SQY7C6VDP4p5S6tin9WQujmcIO6fRldpjdRWN+qaxrK3CyVr26EQlUhwyyPDpWc+gTW/9QmmQG3o8TKBgMeEBzsJUFnMjM9c0kWeEFup14HeTakoq6waegvKuCMbP/O76BA23K+lENOerF2CK0UAJHwzYWNVt0CH8SE5nghoSbEWU9fI2FSeAMHiKYDEAbDEXcgSuVIdrgH7BPtPE55NoINAAkDrwK9V3lNDY6rPM0YAOcQ373vOWeBwvHjIaV9rdVzjRQEB6YAog0whu9zNRGfdI9an9sm/asEy4y8Zw4xtFnd7xmAeIQGrvBXK67KTlsLAhMkaqiS2YL7aDRKlMqfRGgnAY666sgZ+arLtMfJVhqwtIf0Xy0hr6pa26Nqju3/xf6KdHCMgDEyKiW3M0KnX2FSfviAj9bi119GPVDMIyMABYeFjTaUih9BkLxjCRldWLusuiR8lSb6ZPFzjr6We6Z4Gr/nEvulHrYMp0XDehN5xdlqoB1cE7shxgNg2M3WptcJNJv5odKAug0zT0TzHCIOIVeIUSZvqfyYodrHE77jR3/Sqw/2U3hs8gKV5Dbnv5iXzrc7wYEpufn2lWMRrclGw0m8xjIiDSKzL4s34iKO2Olj3rFt8gvFGfYCEIEufyAuuN4G3VdNFuWH6Fg="
+      secure: "ilOoLdGsTdT035rhIvWX3Cxgaf2bzRSY0C8bS1huC7b1tmsJ0dkoEqKC3njvfHmvnSWtH/xhRf5OKRlwxSnNNTruJVmNYxB+YbnWZ/5geUKIOXPoMPfEDgV5mkLjVOpZ7Dpbk/DqMFI5WQj3cYaDTTY2GvWU+ugKCio6+/2eEweZwUSyCtG3vaFr9//PyvXXA49FAovog2upMN0MYGur+MilXCfYzcn8toKlMsywUzca8Mz+lC+0QWDmoehrE5vsxBpcY+GHlsgEQX57pWdL0DzD0pvvOmwrEShA4+rgBTwuvxSdgg3CJ4pAL+NO8cZ9c0vfgom0MbHzP30x1ul9F4MmOMWg0VXTSosxTXKKlCwYX4x16T9Lrybu6q4KQOX9dxCCG+aw7RxMVG9O3Pgo3oYXtzOGoX0Tg1YUsy7Y1+wJLu0ZQ2FWn6bmb6TlO23KryhhYxjN6M7UbLTGbCY9310Sdx8eAgpTHUqvhOPaY51I7v2WRgZE3CZoXYKrcKZ5WHMwDDUGp7pEVZm0r+AN6Uma3ko31teFWu1aAjYXxCE3B7b91HorB/n4jky1sN27Y5vkAWF3OheDyviiIIs6GyQJ5uaemlKT9kCKbVfSNReNgNHKeDgP4mm5/k5pCiIIafbuUkgTMzwYY6QaGSEb/vz1XJ70PvYnDUOZP/WCmik="
     file_glob: true
     file:
-     - 'app/build/outputs/apk/releaseNoop/app-releaseNoop*.apk'
-     - 'app/build/outputs/apk/release/app-release*.apk'
-     - 'hood-core/build/outputs/aar/hood-core-noop*.aar'
-     - 'hood-core/build/outputs/aar/hood-core-release*.aar'
-     - 'hood-extended/build/outputs/aar/hood-extended-release*.aar'
+     - 'slf4j-timber/build/outputs/aar/*.aar'
     skip_cleanup: true
     on:
       branch: master
@@ -78,9 +59,8 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-    - $HOME/.android/build-cache
 
 notifications:
   slack:
-    secure: "oynQEnZp+UTqaM9N3ltfhS0qKSiEpxqSmGRnFFW/arybWx/9zj8jeAWpRY2fQA5aBl/gocmjJmOyFd8ZG4QPTHnDzADI37rdFIwu9wFdpFpPjnMl4TBm6vSj5H990kMevvYVec+0FakoIUhEMgnB9eyNkq5JO3UU0a4eq30jViEO7z17doYkhkZu7KKBBhFOra4jQsn29enYjelbjK9PPikM2TfrgC2G7f6Vdq2+OuKPJv5NgcHye63jd/LIAyBXY5FVdADPgbA3FI7+XApLS3/U4aEIS7sfOhi34B1bHL35BACOX4Kmz+XQeeAGX9HyNMLbzV3UxtidmblJ/GMnzC2nYPi2A28FmeFBxe2VOD9RohTC7jjyUrT25NsFZRS5rwoWqOsCrnI5NNaNe0Zkt17jaSwQTcH+JazIcGhzYLJedhKwLY7fsi+DtnmKA7Qbx+hZNisSE+DkcPV/yG7NIVrn/Uy8iD93TrZZUBwYqhM6SVdgtUaRvz49vjiL5hki0we6OjPrBv1uxZGyOO4NkUWo1uNJgCaiuGpFnMy0lMNqNAMwMgVSPVdqPN0G4MHwGPByQ3sxtkfTvm5dPdipC93zI/PHbTMyd8JzzNKAMmdH9+vZTKocN6K0EtTGhdBofGJdAWo3TCaKgUJRn6jTYqGr68uPpoiGto+3Mr1kyhk="
+    secure: "D5qM/NEz/wjtvBo1KzJv1ioyOmvPTnm7O3sug02q8EKjVbGF4V7EBSrlRHzzZTS6sydWTr0dsU03x/G8MvCTGeKVin4XFD9RdF36H5EXt3o63ciTrpXDXcB+iBbuO4knV06gvbsMj3c9k51++p5QYXs+KRly20VQYDyfrwVOo9FTIXG7NKozFz0nypNiy+/Q0YG+2cyNZc8fvJGuqK+xn2VVqZxXi0b1mxyjuDA/o+glsr7iFT8st9uYZL4mjSJiRCZx9hF8u+CPgvWGIhtnHvu5wYujM8PPbcuyeFvYKRgGhsPV6nxXqu4ptGDE+EsuIf9adart6ETREZFbzvHAk8nzE4OdlCDU7bb0WkkH8VlYCnxiyHwHUhtr928xRHsJ8MewEZqB1pCoolaKIRVMY7W4zz0t38XvebfKHlyEZ6Fdbc9JigmGwlIr4nyVz6n/VAmR3zdL4wwCre1c7zQirnchQcTdjnkvgZ/y3gLQw6w5JN/Uqg5wsTjHsqbB7FuTwOBA1xe+Z1fBVofUsfMax/ja/b2F2TfrA/ug28QaRCjGEOeTSDaQETmy+Wy4y76daNUsWFGEid1M743iQ97ZIRGsCq//QJmLFWJd35qgeKIZeAy+FDZ27yvEShPwXKm2sIh3gRyrJDIpWZ2Is2/ITcL/5XeGSjf5MBwDSXRMB/4="
   email: false
