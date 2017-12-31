@@ -31,8 +31,9 @@ The artifacts are deployed to [jcenter](https://bintray.com/bintray/jcenter) and
 
 ### Log level mapping
 The priorities will be converted to LogCat's priority level and passed to
-`Timber.log(...);`. The following table shows the mapping from SLF4J log levels
-to LogCat log levels.
+`Timber.log(...);`. The `Log.isLoggable()` are not respected here, since `Timber`
+should be responsible to decide when to log what. The following table shows
+the mapping from SLF4J log levels to LogCat log levels.
 
 | SLF4J         | Android/Timber |
 | ------------- |:-------------: |

@@ -41,7 +41,7 @@ class TimberAndroidLoggerFactory implements ILoggerFactory {
     static final String ANONYMOUS_TAG = "null";
     static final int TAG_MAX_LENGTH = 23;
 
-    private final ConcurrentMap<String, Logger> loggerMap = new ConcurrentHashMap<String, Logger>();
+    private final ConcurrentMap<String, Logger> loggerMap = new ConcurrentHashMap<>();
 
     /**
      * Return an appropriate {@link TimberAndroidLoggerAdapter} instance by name.
@@ -59,16 +59,15 @@ class TimberAndroidLoggerFactory implements ILoggerFactory {
 
     /**
      * Tag names cannot be longer than {@value #TAG_MAX_LENGTH} characters on Android platform.
-     *
+     * <p>
      * Returns the short logger tag (up to {@value #TAG_MAX_LENGTH} characters) for the given logger name.
      * Traditionally loggers are named by fully-qualified Java classes; this
      * method attempts to return a concise identifying part of such names.
-     *
+     * <p>
      * See also:
      * android/system/core/include/cutils/property.h
      * android/frameworks/base/core/jni/android_util_Log.cpp
      * dalvik.system.DalvikLogging
-     *
      */
     static String loggerNameToTag(String loggerName) {
         // Anonymous logger
@@ -119,6 +118,6 @@ class TimberAndroidLoggerFactory implements ILoggerFactory {
         int length = loggerName.length();
         int lastPeriodIndex = loggerName.lastIndexOf('.');
         return lastPeriodIndex != -1 && length - (lastPeriodIndex + 1) <= TAG_MAX_LENGTH ? loggerName.substring(lastPeriodIndex + 1) : '*' + loggerName
-                        .substring(length - TAG_MAX_LENGTH + 1);
+                .substring(length - TAG_MAX_LENGTH + 1);
     }
 }
