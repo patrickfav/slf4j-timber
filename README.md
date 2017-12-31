@@ -1,7 +1,15 @@
 # slf4j-timber
 
-[Hashed Message Authentication Code](https://en.wikipedia.org/wiki/Hash-based_message_authentication_code) (HMAC)-based key derivation function ([HKDF](https://en.wikipedia.org/wiki/HKDF)), can be used as a building block in various protocols and applications.  The [key derivation function](https://en.wikipedia.org/wiki/Key_derivation_function) (KDF) is intended to support a wide range of applications and requirements, and is conservative in its use of [cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function). It is likely to have [better security properties](https://crypto.stackexchange.com/questions/13232/how-is-hkdf-expand-better-than-a-simple-hash) than KDF's based on just a hash functions alone. See [RFC 5869](https://tools.ietf.org/html/rfc5869) for full detail.
+The motivation of this project was to ease using existing libraries
+which use SLF4J as their logging framework on the Google Android platform
+in combination with [Jake Wharton's Timber logging utility.](https://github.com/JakeWharton/timber)
 
+This project is based on the [_official_ slf4j-android implementation](https://mvnrepository.com/artifact/org.slf4j/slf4j-android) (+ bugfixes)
+but directs the logging calls mainly to `Timber.log(...);`.
+
+This project is basically a (i) repackaging of the SLF4J API part, together with (ii)
+
+ a very lightweight binding implementation that simply forwards all SLF4J log requests to the logger provided on the Google Android platform. The API part is compiled from the same code basis of the standard distribution. This is the reason why we decided to keep the version numbering in sync with the standard SLF4J releases in order to reflect the code basis from which it was built.
 [![Download](https://api.bintray.com/packages/patrickfav/maven/slf4j-timber/images/download.svg)](https://bintray.com/patrickfav/maven/slf4j-timber/_latestVersion)
 [![Build Status](https://travis-ci.org/patrickfav/slf4j-timber.svg?branch=master)](https://travis-ci.org/patrickfav/slf4j-timber)
 [![Javadocs](https://www.javadoc.io/badge/at.favre.lib/slf4j-timber.svg)](https://www.javadoc.io/doc/at.favre.lib/slf4j-timber)
@@ -10,45 +18,58 @@
 
 ## Quickstart
 
-Add dependency to your `pom.xml`:
+Add the following to your dependencies ([add jcenter to your repositories](https://developer.android.com/studio/build/index.html#top-level) if you haven't)
 
-    <dependency>
-        <groupId>at.favre.lib</groupId>
-        <artifactId>hkdf</artifactId>
-        <version>{latest-version}</version>
-    </dependency>
-
-A very simple example:
-
-```java
-byte[] pseudoRandomKey = HKDF.fromHmacSha256().extract(null, lowEntropyInput);
-byte[] outputKeyingMaterial = HKDF.fromHmacSha256().expand(pseudoRandomKey, null, 64);
+```gradle
+compile 'at.favre.lib:slf4j-timber:1.0.0'
 ```
+
+And that's basically it. SLF4J will automatically look for implementations of `ILoggerFactory` in the classpath (so don't add this
+parallel to `org.slf4j:slf4j-android`)
 
 ## Download
 
 The artifacts are deployed to [jcenter](https://bintray.com/bintray/jcenter) and [Maven Central](https://search.maven.org/).
 
-### Maven
+## Description
 
-Add dependency to your `pom.xml`:
+### Log level mapping
+The priorities will be converted to LogCat's priority level and passed to
+`Timber.log(...);`. The following table shows the mapping from SLF4J log levels
+to LogCat log levels.
 
-    <dependency>
-        <groupId>at.favre.lib</groupId>
-        <artifactId>slf4j-timber</artifactId>
-        <version>{latest-version}</version>
-    </dependency>
+| SLF4J         | Android/Timber |
+| ------------- |:-------------: |
+| TRACE         | VERBOSE        |
+| DEBUG         | DEBUG          |
+| INFO          | INFO           |
+| WARN          | WARN           |
+| ERROR         | ERROR          |
 
-### Gradle
+### Logger name mapping
 
-Add to your `build.gradle` module dependencies:
+Logger instances created using the LoggerFactory are named either according to
+the name given as parameter, or the fully qualified class name of the class given as
+parameter. Each logger name will be used as the log message tag on the Android platform.
+However, the length of such tags is currently limited to 23 characters
+(23 = 32 - 8 for namespace prefix - 1 for C terminator). If the fully qualified class
+name (or the name given as parameter at creation time) exceeds this limit
+then it will be truncated by the LoggerFactory and the new Logger will
+have the truncated name. The following examples illustrate this:
 
-    compile group: 'at.favre.lib', name: 'slf4j-timber', version: '{latest-version}'
+| Original Name                                           | Truncated Name          |
+| -------------                                           | -------------           |
+| `org.example.project.MyClass`                           | `o*.e*.p*.MyClass`        |
+| `org.example.project.subproject.MyClass`                | `o*.e*.p*.s*.MyClass`     |
+| `org.example.MyQuiteLongNamedClassOfTooMuchCharacters`  | `o*.e*.MyQuiteLongNamed*` |
+| `o.e.project.subproject.MyClass`                        | `o.e.p*.s*.MyClass`       |
+| `MyQuiteLongNamedClassNotInAPackage`                    | `MyQuiteLongNamedClassN*` |
 
-### Local Jar
-
-[Grab jar from latest release.](https://github.com/patrickfav/slf4j-timber/releases/latest)
-
+### Limitations
+The Android-Timber binding implementation currently does not support Markers.
+All logging methods which have a Marker parameter simply delegate to the
+corresponding method without a Marker parameter, i.e., the Marker parameter
+is silently ignored.
 
 ## Digital Signatures
 

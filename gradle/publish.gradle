@@ -2,17 +2,17 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 def final publishConfig = [
-        name                    : 'Under the Hood',
-        repoName                : 'hood', //repo name in bintray 'maven/<reponame>'
-        group                   : 'at.favre.lib.hood',
+        name                    : 'SLF4J binding for Timber',
+        repoName                : 'slf4j-timber', //repo name in bintray 'maven/<reponame>'
+        group                   : 'at.favre.lib',
         version                 : rootProject.ext.versionNameLib,
-        descriptionText         : 'A debug view library for Android. Very flexible through a simple templating system but easy to use due to a lot of defaults. Also has a no-op flavor for your release build.',
-        inceptionYear           : '2016',
-        siteUrl                 : 'https://github.com/patrickfav/under-the-hood',
-        gitUrl                  : 'https://github.com/patrickfav/under-the-hood.git',
-        issueTrackerUrl         : 'https://github.com/patrickfav/under-the-hood/issues',
+        descriptionText         : 'SLF4J binding for Timber, a logger with a small, extensible API which provides utility on top of Android\'s normal Log class by Jake Wharton.',
+        inceptionYear           : '2017',
+        siteUrl                 : 'https://github.com/patrickfav/slf4j-timber',
+        gitUrl                  : 'https://github.com/patrickfav/slf4j-timber.git',
+        issueTrackerUrl         : 'https://github.com/patrickfav/slf4j-timber/issues',
         issueTrackerName        : 'Github',
-        githubRepo              : 'patrickfav/under-the-hood',
+        githubRepo              : 'patrickfav/slf4j-timber',
 
         pomDevId                : 'pfavre',
         pomDevName              : 'Patrick Favre-Bulle',
@@ -22,7 +22,7 @@ def final publishConfig = [
         licenseBintray          : ['Apache-2.0'],
         licenseUrl              : 'http://www.apache.org/licenses/LICENSE-2.0.txt',
 
-        bintrayLabels           : ['android', 'debugging', 'noop', 'debug-view'],
+        bintrayLabels           : ['android', 'slf4j-binding', 'timber', 'logging', 'logcat', 'slf4j'],
 
         bintrayUploadDryRun     : false, //Whether to only mock uploading
         bintrayUploadAutoPublish: true, //Whether version should be auto published after an upload
@@ -112,12 +112,6 @@ bintray {
     key = properties.getProperty("bintray.apikey")
 
     configurations = ['archives']
-    filesSpec { //When uploading any arbitrary files ('filesSpec' is a standard Gradle CopySpec)
-        from new File(project.buildDir, "outputs/aar")
-        include '*-noop.aar'
-        into "$rootProject.ext.versionNameLib/"
-        rename { name -> "hood-core-$rootProject.ext.versionNameLib-noop.aar" }
-    }
 
     dryRun = publishConfig.bintrayUploadDryRun
     publish = publishConfig.bintrayUploadAutoPublish

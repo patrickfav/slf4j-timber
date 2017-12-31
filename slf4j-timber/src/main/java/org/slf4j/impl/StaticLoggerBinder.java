@@ -37,6 +37,7 @@ import org.slf4j.spi.LoggerFactoryBinder;
  * @author Andrey Korzhevskiy <a.korzhevskiy@gmail.com>
  */
 
+@SuppressWarnings("unused")
 public class StaticLoggerBinder implements LoggerFactoryBinder {
 
     /**
@@ -60,7 +61,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
     // to avoid constant folding by the compiler, this field must *not* be final
     public static String REQUESTED_API_VERSION = "1.6.99"; // !final
 
-    private static final String loggerFactoryClassStr = AndroidLoggerFactory.class.getName();
+    private static final String loggerFactoryClassStr = TimberAndroidLoggerFactory.class.getName();
 
     /**
      * The ILoggerFactory instance returned by the {@link #getLoggerFactory} method
@@ -69,7 +70,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
     private final ILoggerFactory loggerFactory;
 
     private StaticLoggerBinder() {
-        loggerFactory = new AndroidLoggerFactory();
+        loggerFactory = new TimberAndroidLoggerFactory();
     }
 
     public ILoggerFactory getLoggerFactory() {

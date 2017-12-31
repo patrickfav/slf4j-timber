@@ -32,25 +32,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * AndroidLoggerFactory is an implementation of {@link ILoggerFactory} returning
- * the appropriately named {@link AndroidLoggerFactory} instance.
+ * TimberAndroidLoggerFactory is an implementation of {@link ILoggerFactory} returning
+ * the appropriately named {@link TimberAndroidLoggerFactory} instance.
  *
  * @author Andrey Korzhevskiy <a.korzhevskiy@gmail.com>
  */
-class AndroidLoggerFactory implements ILoggerFactory {
+class TimberAndroidLoggerFactory implements ILoggerFactory {
     static final String ANONYMOUS_TAG = "null";
     static final int TAG_MAX_LENGTH = 23;
 
     private final ConcurrentMap<String, Logger> loggerMap = new ConcurrentHashMap<String, Logger>();
 
     /**
-     * Return an appropriate {@link AndroidLoggerAdapter} instance by name.
+     * Return an appropriate {@link TimberAndroidLoggerAdapter} instance by name.
      */
     public Logger getLogger(String name) {
         String tag = loggerNameToTag(name);
         Logger logger = loggerMap.get(tag);
         if (logger == null) {
-            Logger newInstance = new AndroidLoggerAdapter(tag);
+            Logger newInstance = new TimberAndroidLoggerAdapter(tag);
             Logger oldInstance = loggerMap.putIfAbsent(tag, newInstance);
             logger = oldInstance == null ? newInstance : oldInstance;
         }

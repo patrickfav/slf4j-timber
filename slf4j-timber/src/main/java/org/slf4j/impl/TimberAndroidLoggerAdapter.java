@@ -83,14 +83,14 @@ import timber.log.Timber;
  * @author Andrey Korzhevskiy <a.korzhevskiy@gmail.com>
  * @author Patrick Favre-Bulle <patrick.favrebulle@gmail.com>
  */
-class AndroidLoggerAdapter extends MarkerIgnoringBase {
+class TimberAndroidLoggerAdapter extends MarkerIgnoringBase {
     private static final long serialVersionUID = -1227274521521287937L;
 
     /**
-     * Package access allows only {@link AndroidLoggerFactory} to instantiate
+     * Package access allows only {@link TimberAndroidLoggerFactory} to instantiate
      * SimpleLogger instances.
      */
-    AndroidLoggerAdapter(String tag) {
+    TimberAndroidLoggerAdapter(String tag) {
         this.name = tag;
     }
 
