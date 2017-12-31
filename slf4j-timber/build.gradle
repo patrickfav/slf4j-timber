@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+apply plugin: 'jacoco-android'
+apply plugin: "com.github.kt3k.coveralls"
+
+android {
+    testBuildType "release"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionNameLib
+
+        buildConfigField "String", "BUILD_NUMBER", "\"" + getCiBuildNumber() + "\""
+
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${project.name}-${variant.name}-${version}.aar"
+        }
+    }
+}
+
+android.variantFilter { variant ->
+    if (variant.buildType.name == com.android.builder.core.BuilderConstants.DEBUG) {
+        variant.setIgnore(true)
+    }
+}
+
+dependencies {
+    implementation "com.jakewharton.timber:timber:$rootProject.ext.dependencies.timber"
+    implementation "org.slf4j:slf4j-api:$rootProject.ext.dependencies.slf4j"
+
+    testImplementation "junit:junit:$rootProject.ext.dependencies.junit"
+}
+
+apply from: "$rootDir/gradle/publish.gradle"
