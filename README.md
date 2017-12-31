@@ -7,14 +7,10 @@ in combination with [Jake Wharton's Timber logging utility.](https://github.com/
 This project is based on the [_official_ slf4j-android implementation](https://mvnrepository.com/artifact/org.slf4j/slf4j-android) (+ bugfixes)
 but directs the logging calls mainly to `Timber.log(...);`.
 
-This project is basically a (i) repackaging of the SLF4J API part, together with (ii)
-
- a very lightweight binding implementation that simply forwards all SLF4J log requests to the logger provided on the Google Android platform. The API part is compiled from the same code basis of the standard distribution. This is the reason why we decided to keep the version numbering in sync with the standard SLF4J releases in order to reflect the code basis from which it was built.
 [![Download](https://api.bintray.com/packages/patrickfav/maven/slf4j-timber/images/download.svg)](https://bintray.com/patrickfav/maven/slf4j-timber/_latestVersion)
 [![Build Status](https://travis-ci.org/patrickfav/slf4j-timber.svg?branch=master)](https://travis-ci.org/patrickfav/slf4j-timber)
 [![Javadocs](https://www.javadoc.io/badge/at.favre.lib/slf4j-timber.svg)](https://www.javadoc.io/doc/at.favre.lib/slf4j-timber)
 [![Coverage Status](https://coveralls.io/repos/github/patrickfav/slf4j-timber/badge.svg?branch=master)](https://coveralls.io/github/patrickfav/slf4j-timber?branch=master)
-
 
 ## Quickstart
 
@@ -73,17 +69,6 @@ is silently ignored.
 
 ## Digital Signatures
 
-### Signed Jar
-
-The provided JARs in the Github release page are signed with my private key:
-
-    CN=Patrick Favre-Bulle, OU=Private, O=PF Github Open Source, L=Vienna, ST=Vienna, C=AT
-    Validity: Thu Sep 07 16:40:57 SGT 2017 to: Fri Feb 10 16:40:57 SGT 2034
-    SHA1: 06:DE:F2:C5:F7:BC:0C:11:ED:35:E2:0F:B1:9F:78:99:0F:BE:43:C4
-    SHA256: 2B:65:33:B0:1C:0D:2A:69:4E:2D:53:8F:29:D5:6C:D6:87:AF:06:42:1F:1A:EE:B3:3C:E0:6D:0B:65:A1:AA:88
-
-Use the jarsigner tool (found in your `$JAVA_HOME/bin` folder) folder to verify.
-
 ### Signed Commits
 
 All tags and commits by me are signed with git with my private key:
@@ -93,23 +78,13 @@ All tags and commits by me are signed with git with my private key:
 
 ## Build
 
-### Jar Sign
+Assemble the lib with the following command
 
-If you want to jar sign you need to provide a file `keystore.jks` in the
-root folder with the correct credentials set in environment variables (
-`OPENSOURCE_PROJECTS_KS_PW` and `OPENSOURCE_PROJECTS_KEY_PW`); alias is
-set as `pfopensource`.
+    ./gradlew :assemble
+    ./gradlew :hood-extended:assemble
 
-If you want to skip jar signing just change the skip configuration in the
-`pom.xml` jar sign plugin to true:
+The `.aar` files can then be found in `/hood-*/build/outputs/aar` folder
 
-    <skip>true</skip>
-
-### Build with Maven
-
-Use maven (3.1+) to create a jar including all dependencies
-
-    mvn clean install
 
 ## Tech Stack
 
