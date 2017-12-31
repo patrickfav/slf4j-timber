@@ -1,49 +1,86 @@
-sudo: required
-language: java
-install: true
-jdk:
-  - oraclejdk8
+# Possible Issues:
+#
+# .gradlw permission denied:
+# git update-index --chmod=+x gradlew //http://stackoverflow.com/questions/33820638/travis-yml-gradlew-permission-denied
+
+language: android
+jdk: oraclejdk8
+
+android:
+  components:
+    - tools # to get the new `repository-11.xml`
+    - platform-tools
+    - tools # to install Android SDK tools 25.1.x (x = 6 right now)
+    - build-tools-26.0.2
+    - android-26
+#    - android-22
+#    - sys-img-armeabi-v7a-android-22
+    - extra-google-m2repository
+    - extra-android-m2repository
+
+  licenses:
+      - 'android-sdk-preview-license-.+'
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
 
 env:
   global:
-    - secure: "yg2rRwGDgX/8LfSfaYKdHUSV+F7w819WTdfa40C6cj92RPmLEmIeiyRSmNuPNsyWCSbONXOWyEnGSYqG3y3/V4fBs/LZibK2p4tg0LJj2ajeaDXzGo8Fy0XHRkRzb9lJUqNXfMPrhR5SafO5tT3xHAWSgEP0XD+kUsjZ/NmFkiltrbEg5j4XvmK5blmsHCEFlqc+OCk8L/lSIcn7u43PDrHGuNdF118HbctYqypaoqBgGqu69auh79/ytI6zA4KpRJMBuVhQlJxAhLQDKRHFP7TEmJmR7WXwXAYCpY2BAVkmu7MGMzf8qKnO3ccsy73epUTHo9ywSM/WNEEfGnluvnP1AeVWUKMLIMqnVQU8feoEQjzm9G1KbknfX/xo4OFegSwkCgViQOWP6Ju/gmIXfGn/Pcy00z2PpXgKUDRywVwIAnY9LX0QqoYQBwCqoCJWaS+KE7qWRbIFNzRS5EQx44iCl8d0g54+37qGr4eC57QHZ5bpfLmbdyZskrLZzFQcYL6fHTvBr5bbmFC0jOHTNeWD5ujq4XnJvjCrZ0M/IjpSGJFd49LeBdEcxqcjfY2WXaeNpIQ7sIfSuESFmXf2J5tVq3zmBsGDXzx9Ckh2CcspErPxNqCFPNJ21gnWLRZL0MZ5NlVv/myI2EKf1Pq+5WOwhlhBg+jIZfxZQszWtkM="
-    - secure: "kAGN99lV78KkQhvQwualbQRBjpHqT5A1gIpsfWojTkPSKEd+C74uYs3fqecqf9VHRGtms5fEdUceAimoYLclM4iPEEU6wQ6KZLADedRRY4VofbxwuwWmL/dNMUNdWJ8ZHW+ssjvyiqyQ/MOpFdfEM0csSk/BAfNktXnHS3fKdfrWu/iJljBd7TsX33Zl7EEyyR61/Gsulo6vuARRWsKdIYRvokS9N6dh0SZpYvKrobRzqEZQkbuqM+H/d6KQvvv/PL1Zd3mc1UKpgxPERAb1Cy8m8tIBzSyUfC76CVuoXHz/d9xUnCbtKnAvfiysXK0iPSCkapj0byMLXkGc5NmTK4A5SPHF5sJXJQ0zybtZeIr3FwOfAQTks5OEf4/WnYW4F/+0gWGhois1ZJ2wPQbcC7WXZkbn3QVYbawM+DafOKSOmOicSTuJr0BAQK6u9+vCmNS84UibL5PYloCg487QLxj7fCiQy1FjQIwOXspLt4jt8l2Oea6g9YRi0DWdWR5QwDKdlNljZ/oYN5OGX2jm3jgDgM1L+wUl7XpcdJT7jgenDNICUVTv3QQj++uQxBViaiq5YmHU5oWvqcSzqTJq0rBAOD+AUOdWFtKS0acF0MpmURawhcSRWWpwEh6/luCzTqAVUuXaYmPT2E2z/ktpm68+ShgAQMBGybk4tx0WI4Y="
+   # install timeout in minutes (2 minutes by default)
+    - ADB_INSTALL_TIMEOUT=8
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_901439c1b2d2_key -iv $encrypted_901439c1b2d2_iv -in secrets.tar.enc -out secrets.tar -d
-  - tar xvf secrets.tar
+  - openssl aes-256-cbc -K $encrypted_376031a79878_key -iv $encrypted_376031a79878_iv -in credentials.tar.enc -out credentials.tar -d
+  - tar xvf credentials.tar
+
+# Emulator Management: Create, Start and Wait
+#before_script:
+#  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+#  - emulator -avd test -no-audio -no-window &
+#  - android-wait-for-emulator
+#  - adb shell input keyevent 82 &
 
 script:
-  - mvn clean install -X -Djarsigner.skip=false checkstyle:check
+  - ./gradlew clean assemble --stacktrace
+  - ./gradlew checkstyle lint --stacktrace
+  - ./gradlew testReleaseUnitTest --info
+# - ./gradlew connectedDebugAndroidTest
 
 after_success:
-  - mvn test jacoco:report coveralls:report
+  - ./gradlew jacocoTestReleaseUnitTestReport coveralls --info
 
 deploy:
   - provider: script
-    script: mvn -s ci-settings.xml deploy -X checkstyle:checkstyle
+    script: ./gradlew install bintrayUpload --info
     skip_cleanup: true
     on:
       branch: master
       tags: true
   - provider: releases
     api_key:
-      secure: "YtK6gh4f6ax5JITgE6N3SIZUN3gzCp3meLfzWtRJmRlntU5VOQYnwzsL7CeVMxm/A+5uIalSRNrc+AqYpOYphmNYz2BDnEQDocKXugkbpH2N7FVGNBS8EXu7ZC2MR/0/sy1E43+trReFdPsNWx5kM04SsQB61aA2StwESSWz7x5ZbU2qk+d1N5NWa3qDo1Mig9N/6qdkvef8y+XavbQus9F9cGUdspminmriFgg9x4otkHD+9f5YhfITpf0Zt00XO/wRkckFTh1un8B56dTJ7JVnMatwM+HGydSZ3KNquZobT400V8nnO3a2CsjzjhSSULklv9ASzVv5D5p6oZpAuUOlIIqsVQzxCdLq/qRJCgjvphmAsX5MBzE9sRqaK+HLXcN2Bs0sQzj7tozQgECBv/9dUrQ7F/wvegNI6HqLHF66YmR+JMpFGab1RlvqZ+SKB7TwY67kdZkHJxaxfjc0/y7IO0Fdiigw8qQNfTSQ+oRPyGMwGKnMDeNHKeJ67LWNGjyjprG/Ywh6zgwEYnAIiwEncOMhdRGSobKqeYU3o4uOGD7zLnMC2pLtPhi+ymj4tEOjmpNmtZn69Q6J177i4cVJNjYPXuXVcwM/JxmxZU7u0XwomV6LVkWQKx9qmwET0gT1uX1sxC1IPmQA/77uKQNqFGRydm/rCHcO5lEe1Kc="
+      secure: "pnYV4mnpvtOHWx8arKgY0SQY7C6VDP4p5S6tin9WQujmcIO6fRldpjdRWN+qaxrK3CyVr26EQlUhwyyPDpWc+gTW/9QmmQG3o8TKBgMeEBzsJUFnMjM9c0kWeEFup14HeTakoq6waegvKuCMbP/O76BA23K+lENOerF2CK0UAJHwzYWNVt0CH8SE5nghoSbEWU9fI2FSeAMHiKYDEAbDEXcgSuVIdrgH7BPtPE55NoINAAkDrwK9V3lNDY6rPM0YAOcQ373vOWeBwvHjIaV9rdVzjRQEB6YAog0whu9zNRGfdI9an9sm/asEy4y8Zw4xtFnd7xmAeIQGrvBXK67KTlsLAhMkaqiS2YL7aDRKlMqfRGgnAY666sgZ+arLtMfJVhqwtIf0Xy0hr6pa26Nqju3/xf6KdHCMgDEyKiW3M0KnX2FSfviAj9bi119GPVDMIyMABYeFjTaUih9BkLxjCRldWLusuiR8lSb6ZPFzjr6We6Z4Gr/nEvulHrYMp0XDehN5xdlqoB1cE7shxgNg2M3WptcJNJv5odKAug0zT0TzHCIOIVeIUSZvqfyYodrHE77jR3/Sqw/2U3hs8gKV5Dbnv5iXzrc7wYEpufn2lWMRrclGw0m8xjIiDSKzL4s34iKO2Olj3rFt8gvFGfYCEIEufyAuuN4G3VdNFuWH6Fg="
     file_glob: true
     file:
-      - "target/hkdf-*.jar"
-      - "target/*.sha256"
-      - "target/checksum-sha256.txt"
+     - 'app/build/outputs/apk/releaseNoop/app-releaseNoop*.apk'
+     - 'app/build/outputs/apk/release/app-release*.apk'
+     - 'hood-core/build/outputs/aar/hood-core-noop*.aar'
+     - 'hood-core/build/outputs/aar/hood-core-release*.aar'
+     - 'hood-extended/build/outputs/aar/hood-extended-release*.aar'
     skip_cleanup: true
     on:
       branch: master
       tags: true
 
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 cache:
   directories:
-    - $HOME/.m2
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
 
 notifications:
   slack:
-    secure: "eQL4s+1hwUIvPoFok5ridSE2Rheyb1mcjl432FRYWIxAEcAjWB0FFnvZJMwZCEL5wLrEWu9PBEerdY81oN3uSR2J616pcji1DLSmQ52OBvQnBFmxzdqrhCGKJJQidhBQq3+GXBHnhQRP1J4FXkFVXAiQnxPDM+LKaSwi88VLQLsI7RqQ54HcF+UT3jv39HsIZy7eWaHTmeE+9QiS9acEIwzZmAGwtE4QAPBBSSLH+MGcVZROyAoWxf3ysNoId+ZJNvzMvg7QRSZX+FQADDbbAsCWDwXFNttu3mJe6PEQfSI/QlU/cc2WMnkqss6i07gd0I65FduFTnDUj91XnlQXAFiympRvygPgiDDf/X6KuZn6wB2i8VXEX3P/MbcmwMfGecNusbATvrTcpU+8K6uQQ6G9Yu90Iq0+AIOeM5poeG/DDOmObeMbcBPeRh9+IMYIo3d7/VJCCampSztJY2eQV6a3c6BXzaWmw3/617pF1AF5D1lqHSWCS0tRXE3AOk/xCMVaACEuKWch2I/oZZQORcZPPAlggzxOEBWDUEzqXsPiDdlJtGMPnri2vciXNFIeX0DpAhI/lD1Ytiw41PFvbUQNG0uSlOjDqi3nqrrOy3NESkYCJAMJyoMFWZ2UjyIGiod03NC82nhhEjpEClICq8YKJr4MrX2tYWxltUrbvmw="
+    secure: "oynQEnZp+UTqaM9N3ltfhS0qKSiEpxqSmGRnFFW/arybWx/9zj8jeAWpRY2fQA5aBl/gocmjJmOyFd8ZG4QPTHnDzADI37rdFIwu9wFdpFpPjnMl4TBm6vSj5H990kMevvYVec+0FakoIUhEMgnB9eyNkq5JO3UU0a4eq30jViEO7z17doYkhkZu7KKBBhFOra4jQsn29enYjelbjK9PPikM2TfrgC2G7f6Vdq2+OuKPJv5NgcHye63jd/LIAyBXY5FVdADPgbA3FI7+XApLS3/U4aEIS7sfOhi34B1bHL35BACOX4Kmz+XQeeAGX9HyNMLbzV3UxtidmblJ/GMnzC2nYPi2A28FmeFBxe2VOD9RohTC7jjyUrT25NsFZRS5rwoWqOsCrnI5NNaNe0Zkt17jaSwQTcH+JazIcGhzYLJedhKwLY7fsi+DtnmKA7Qbx+hZNisSE+DkcPV/yG7NIVrn/Uy8iD93TrZZUBwYqhM6SVdgtUaRvz49vjiL5hki0we6OjPrBv1uxZGyOO4NkUWo1uNJgCaiuGpFnMy0lMNqNAMwMgVSPVdqPN0G4MHwGPByQ3sxtkfTvm5dPdipC93zI/PHbTMyd8JzzNKAMmdH9+vZTKocN6K0EtTGhdBofGJdAWo3TCaKgUJRn6jTYqGr68uPpoiGto+3Mr1kyhk="
   email: false
