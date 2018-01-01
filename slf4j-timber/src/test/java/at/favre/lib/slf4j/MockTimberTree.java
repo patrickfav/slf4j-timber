@@ -33,12 +33,12 @@ public class MockTimberTree extends Timber.Tree {
 
     @Override
     protected synchronized void log(int priority, String tag, String message, Throwable t) {
-        System.out.println("["+toString()+"]"+" prio: " + priority + " - tag: " + tag + " - message: " + message + " - throwable: " + t);
+        System.out.println("[" + toString() + "]" + " prio: " + priority + " - tag: " + tag + " - message: " + message + " - throwable: " + t);
 
         if (isExpectedSet) {
             assertEquals("log priority should match", expectedPrio, priority);
             assertEquals("log tag should match", expectedTag, tag);
-            if(t != null) {
+            if (t != null) {
                 assertTrue(message.startsWith(this.message));
                 assertEquals("log throwable should match", this.t, t);
             } else {

@@ -18,7 +18,7 @@ import static junit.framework.Assert.assertTrue;
  */
 
 public class SimpleLogTest {
-    private final static String TAG = "SimpleLogTest.Log";
+    private static final String TAG = "SimpleLogTest.Log";
     private Logger logger = LoggerFactory.getLogger(TAG);
 
     private MockTimberTree mockTimberTree;
