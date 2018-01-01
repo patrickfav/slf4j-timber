@@ -47,22 +47,10 @@ the mapping from SLF4J log levels to LogCat log levels.
 
 Logger instances created using the LoggerFactory are named either according to
 the name given as parameter, or the fully qualified class name of the class given as
-parameter. Each logger name will be used as the log message tag on the Android platform.
-However, the length of such tags is currently limited to 23 characters
-(23 = 32 - 8 for namespace prefix - 1 for C terminator). If the fully qualified class
-name (or the name given as parameter at creation time) exceeds this limit
-then it will be truncated by the LoggerFactory and the new Logger will
-have the truncated name. The following examples illustrate this:
-
-| Original Name                                           | Truncated Name          |
-| -------------                                           | -------------           |
-| `org.example.project.MyClass`                           | `o*.e*.p*.MyClass`        |
-| `org.example.project.subproject.MyClass`                | `o*.e*.p*.s*.MyClass`     |
-| `org.example.MyQuiteLongNamedClassOfTooMuchCharacters`  | `o*.e*.MyQuiteLongNamed*` |
-| `o.e.project.subproject.MyClass`                        | `o.e.p*.s*.MyClass`       |
-| `MyQuiteLongNamedClassNotInAPackage`                    | `MyQuiteLongNamedClassN*` |
+parameter. No truncating will take place since Timber handles this itself.
 
 ### Limitations
+
 The Android-Timber binding implementation currently does not support Markers.
 All logging methods which have a Marker parameter simply delegate to the
 corresponding method without a Marker parameter, i.e., the Marker parameter
