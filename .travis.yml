@@ -24,16 +24,16 @@ before_install:
   - echo -e "\n504667f4c0de7af1a06de9f4b1727b84351f2910" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
 
 script:
-  - ./gradlew clean assemble --stacktrace
-  - ./gradlew checkstyle lint --stacktrace
-  - ./gradlew testReleaseUnitTest --info
+  - ./gradlew clean :slf4j-timber:assemble --stacktrace
+  - ./gradlew :slf4j-timber:checkstyle :slf4j-timber:lint --stacktrace
+  - ./gradlew :slf4j-timber:testReleaseUnitTest --info
 
 after_success:
-  - ./gradlew jacocoTestReleaseUnitTestReport coveralls --info
+  - ./gradlew :slf4j-timber:jacocoTestReleaseUnitTestReport coveralls --info
 
 deploy:
   - provider: script
-    script: ./gradlew install bintrayUpload --info
+    script: ./gradlew :slf4j-timber:install :slf4j-timber:bintrayUpload --info
     skip_cleanup: true
     on:
       branch: master
