@@ -27,8 +27,8 @@ task clean(type: Delete) {
 }
 
 ext {
-    versionNameApp = "1.0.0"
-    versionNameLib = "$versionNameApp"
+    versionNameApp = "0.1.0"
+    versionNameLib = "v$versionNameApp"
     versionCode = getCiBuildNumber()
     versionNameDep = "0.+"
 
