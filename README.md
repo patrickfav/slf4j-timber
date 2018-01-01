@@ -69,8 +69,7 @@ All tags and commits by me are signed with git with my private key:
 
 Assemble the lib with the following command
 
-    ./gradlew :assemble
-    ./gradlew :hood-extended:assemble
+    ./gradlew :slf4j-timber:assemble
 
 The `.aar` files can then be found in `/hood-*/build/outputs/aar` folder
 
