@@ -29,7 +29,7 @@ script:
   - ./gradlew :slf4j-timber:testReleaseUnitTest --info
 
 after_success:
-  - ./gradlew :slf4j-timber:jacocoTestReleaseUnitTestReport coveralls --info
+  - ./gradlew :slf4j-timber:jacocoTestReleaseUnitTestReport :slf4j-timber:copyJacocoReport coveralls --info
 
 deploy:
   - provider: script
