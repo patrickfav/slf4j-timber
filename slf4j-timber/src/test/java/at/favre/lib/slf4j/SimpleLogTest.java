@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import timber.log.Timber;
 
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -102,6 +103,16 @@ public class SimpleLogTest {
         assertTrue(logger.isInfoEnabled());
         assertTrue(logger.isWarnEnabled());
         assertTrue(logger.isErrorEnabled());
+    }
+
+    @Test
+    public void testIsLoggable_noTreesPlanted() {
+        Timber.uprootAll();
+        assertFalse(logger.isTraceEnabled());
+        assertFalse(logger.isDebugEnabled());
+        assertFalse(logger.isInfoEnabled());
+        assertFalse(logger.isWarnEnabled());
+        assertFalse(logger.isErrorEnabled());
     }
 
     private void testLog(int priority, String message, Throwable t) {
