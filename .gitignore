@@ -1,5 +1,3 @@
-.gradle
-/local.properties
 .DS_Store
 /build
 /captures
@@ -45,10 +43,6 @@ captures/
 
 # Keystore files
 *.jks
-app/libs/
-app/src/main/res/drawable/
-hood/libs/
-hood/src/main/res/drawable/
 signing.properties
 
 # never commit .tar files in root, might be unencrypted file
