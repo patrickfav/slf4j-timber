@@ -492,7 +492,7 @@ class TimberAndroidLoggerAdapter extends MarkerIgnoringBase {
      * @return always true
      */
     private boolean isLoggable(int priority) {
-        return true;
+        return Timber.treeCount() > 0;
     }
 
     private void logInternal(int priority, String message, Throwable throwable) {
