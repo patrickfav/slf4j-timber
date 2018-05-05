@@ -1,7 +1,14 @@
 # Releases
 
+## v1.0.1
+
+* loggable will only return true if Timber has a Tree planted (thx @drewhamilton)
+* update Gradle Plugin to 3.1.2
+* fix missing drawable in app module
+
 ## v1.0.0
 
+* fix coveralls script
 
 ## v0.2.0
 
