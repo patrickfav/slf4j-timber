@@ -11,6 +11,7 @@ but directs the logging calls mainly to `Timber.log(...);`.
 [![Build Status](https://travis-ci.org/patrickfav/slf4j-timber.svg?branch=master)](https://travis-ci.org/patrickfav/slf4j-timber)
 [![Javadocs](https://www.javadoc.io/badge/at.favre.lib/slf4j-timber.svg)](https://www.javadoc.io/doc/at.favre.lib/slf4j-timber)
 [![Coverage Status](https://coveralls.io/repos/github/patrickfav/slf4j-timber/badge.svg?branch=master)](https://coveralls.io/github/patrickfav/slf4j-timber?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6b8b476498a327afb38f/maintainability)](https://codeclimate.com/github/patrickfav/slf4j-timber/maintainability)
 
 ## Quickstart
 
