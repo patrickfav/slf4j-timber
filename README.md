@@ -72,7 +72,7 @@ Assemble the lib with the following command
 
     ./gradlew :slf4j-timber:assemble
 
-The `.aar` files can then be found in `/hood-*/build/outputs/aar` folder
+The `.aar` files can then be found in `/slf4j-timber/build/outputs/aar` folder
 
 
 ## Tech Stack
