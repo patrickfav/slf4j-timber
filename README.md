@@ -17,7 +17,7 @@ but directs the logging calls mainly to `Timber.log(...);`.
 
 Add the following to your dependencies ([add jcenter to your repositories](https://developer.android.com/studio/build/index.html#top-level) if you haven't)
 
-```gradle
+```groovy
 compile 'at.favre.lib:slf4j-timber:1.0.0'
 ```
 
